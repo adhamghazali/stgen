@@ -1,7 +1,7 @@
 import torch as th
 import torch.nn as nn
 from transformers import T5EncoderModel
-from configs import T5_CONFIGS
+from stgen import configs
 MAX_LENGTH=128
 
 class tokenizer:
@@ -42,7 +42,7 @@ class tokenizer:
         return input_ids,attn_mask
 
 
-class stgen(torch.nn.Module):
+class stgen(th.nn.Module):
 
     def __init__(self,model_name,hidden_size):
         super().__init__()
