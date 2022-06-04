@@ -29,7 +29,7 @@ class tokenizer:
         self.device = next(self.t5_model.parameters()).device
         print("the device is", self.device)
 
-    def get_tokens(self,texts):
+    def get_tokens_masks(self,texts):
 
         encoded = self.tokenizer.batch_encode_plus(texts, return_tensors="pt",
                                               padding='longest',
@@ -89,8 +89,8 @@ class stgen(torch.nn.Module):
 
         return output, hidden
 
-        def initHidden(self):
-            return torch.zeros(1, self.hidden_size)
+    def initHidden(self):
+        return torch.zeros(1, self.hidden_size)
 
 
 
