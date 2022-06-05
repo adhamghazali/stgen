@@ -73,12 +73,9 @@ class stgen(th.nn.Module):
 
         return outputs
 
+    def rnn(self,input_texts,hidden):
 
-
-    def forward(self, tokens,mask, hidden):
-        text_outputs = self.get_text_emb(tokens, mask)
-
-        input_combined = torch.cat(( text_outputs, hidden), 1)
+        input_combined = torch.cat((input_texts, hidden), 1)
         hidden = self.i2h(input_combined)
         output = self.i2o(input_combined)
         output_combined = torch.cat((hidden, output), 1)
@@ -86,8 +83,18 @@ class stgen(th.nn.Module):
         output = self.dropout(output)
         output = self.softmax(output)
 
-
         return output, hidden
+
+
+
+    def forward(self, tokens,mask, hidden):
+        text_outputs = self.get_text_emb(tokens, mask) # Transformer
+
+        output, hidden=rrn(text_outputs,hidden) #Character RNN
+
+        return output
+
+
 
     def initHidden(self):
         return torch.zeros(1, self.hidden_size)
