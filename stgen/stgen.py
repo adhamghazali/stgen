@@ -64,8 +64,8 @@ class stgen(th.nn.Module):
 
         self.t5 = T5EncoderModel.from_pretrained(model_name)
 
-        for param in self.t5.parameters():
-            param.requires_grad = False
+        #for param in self.t5.parameters():
+            #param.requires_grad = False
 
         if th.cuda.is_available():
             self.t5 = self.t5.cuda()
