@@ -120,7 +120,10 @@ class stgen(th.nn.Module):
 
 
     def initHidden(self):
-        return th.zeros(self.batch_size, self.hidden_size)
+
+        weight = next(self.parameters()).data
+        hidden = weight.new(self.batch_size, self.hidden_size).zero_().cuda()
+        return hidden
 
 
 
