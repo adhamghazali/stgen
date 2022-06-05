@@ -9,7 +9,7 @@ import torch.nn.functional as f
 
 
 
-MAX_LENGTH=128
+MAX_LENGTH=256
 
 class tokenizer:
     def __init__(self,model_name):
@@ -40,9 +40,9 @@ class tokenizer:
     def get_tokens_masks(self,texts):
 
         encoded = self.tokenizer.batch_encode_plus(texts, return_tensors="pt",
-                                              padding='longest',
+                                              padding='max_length',
                                               max_length=MAX_LENGTH,
-                                              truncation=True)
+                                              truncation=False)
 
         input_ids = encoded.input_ids.to(self.device)
         attn_mask = encoded.attention_mask.to(self.device)
@@ -59,7 +59,7 @@ class stgen(th.nn.Module):
         self.batch_size=batch_size
         self.embeddings_dims = configs.embedding_dims
 
-        all_letters = string.ascii_letters + " .,;'-"
+        all_letters = string.ascii_letters + " .,;'<"
         self.output_size = len(all_letters) + 1  # Plus EOS marker
 
         self.t5 = T5EncoderModel.from_pretrained(model_name)
@@ -85,16 +85,16 @@ class stgen(th.nn.Module):
     def get_text_emb(self, tokens, mask):
         with th.no_grad():
             encoded_text = self.t5(input_ids=tokens, attention_mask=mask)['last_hidden_state'].float()
-            print('encoded_text shape', encoded_text.shape)
+            #print('encoded_text shape', encoded_text.shape)
             embeddings = self.fc1(encoded_text[:, -1])
-            print('embeddings_shape before   ',embeddings.shape)
+            #print('embeddings_shape before   ',embeddings.shape)
 
 
 
         return embeddings
 
     def rnn(self,embeddings,hidden):
-        print('concat shape', embeddings.shape, hidden.shape)
+        #print('concat shape', embeddings.shape, hidden.shape)
         input_combined = th.cat((embeddings, hidden), 1)
 
         hidden = self.i2h(input_combined)
@@ -111,7 +111,7 @@ class stgen(th.nn.Module):
     def forward(self, tokens,mask, hidden):
 
         embeddings = self.get_text_emb(tokens, mask) # Transformer
-        print('before shape', embeddings.shape, hidden.shape)
+        #print('before shape', embeddings.shape, hidden.shape)
 
         output, hidden=self.rnn(embeddings,hidden) #Character RNN
 

@@ -3,9 +3,10 @@ from __future__ import unicode_literals, print_function, division
 import torch
 import unicodedata
 import string
+from sklearn.model_selection import train_test_split
 
-all_letters = string.ascii_letters + " .,;'"
-n_letters = len(all_letters)
+all_letters = string.ascii_letters + " .,;'<"
+n_letters = len(all_letters)+1
 
 def unicodeToAscii(s):
     return ''.join(
@@ -38,3 +39,16 @@ def tensor_to_line(tensor):
         index=torch.nonzero(one_tensor)[0][1]
         line=line+(all_letters[index])
     return line
+
+
+def tts(df, perc):
+    train_clean_df, test_clean_df = train_test_split(df, test_size=perc)
+
+    return train_clean_df, test_clean_df
+
+def pad_word(word,max_length=20):
+    if len(word)<max_length:
+        padded_word=word+('<'*(max_length-len(word)))
+    else:
+        padded_word = word[0:max_length]
+    return padded_word
