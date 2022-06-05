@@ -56,10 +56,11 @@ class stgen(th.nn.Module):
         self.t5 = T5EncoderModel.from_pretrained(model_name)
         for param in self.t5.parameters():
             param.requires_grad = False
+        self.fc1=nn.linear(configs.embeddings_dims,configs.embeddings_dims)
 
 
-        self.i2h = nn.Linear(embeddings_dims + hidden_size, hidden_size)
-        self.i2o = nn.Linear(embeddings_dims + hidden_size, self.output_size)
+        self.i2h = nn.Linear(configs.embeddings_dims + hidden_size, hidden_size)
+        self.i2o = nn.Linear(configs.embeddings_dims + hidden_size, self.output_size)
         self.o2o = nn.Linear(hidden_size + self.output_size, self.output_size)
         self.dropout = nn.Dropout(0.1)
         self.softmax = nn.LogSoftmax(dim=1)
